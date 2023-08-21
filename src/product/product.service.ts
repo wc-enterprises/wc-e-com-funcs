@@ -45,4 +45,15 @@ import {
       snapshot.forEach(doc => products.push(doc.data()));
       return products;
     }
+
+    async updateProduct(id: string, newData: Partial<ProductDocument>): Promise<void> {
+      const docRef = this.productCollection.doc(id);
+      await docRef.update(newData);
+    }
+    
+    async deleteProduct(id: string): Promise<void> {
+      const docRef = this.productCollection.doc(id);
+      await docRef.delete();
+    }
+    
   }
