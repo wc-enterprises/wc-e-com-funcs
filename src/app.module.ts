@@ -25,7 +25,19 @@ import { ProductAttributeService } from './product-attribute/product-attribute.s
       inject: [ConfigService],
     }),
   ],
-  controllers: [AppController, ProductController, ProductCategoryController, ProductPricingController, ProductAttributeController],
-  providers: [AppService, ProductService, ProductCategoryService, ProductPricingService, ProductAttributeService],
+  controllers: [
+    AppController,
+    ProductController,
+    ProductCategoryController,
+    ProductPricingController,
+    ProductAttributeController,
+  ],
+  providers: [
+    AppService,
+    ProductService,
+    ProductCategoryService,
+    ProductPricingService,
+    ProductAttributeService,
+  ],
 })
 export class AppModule {}
