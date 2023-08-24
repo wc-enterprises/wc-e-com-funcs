@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { ProductService } from './product.service';
 import { generateRandIds } from 'src/utils/generateRandIds';
 import { ProductDocument } from './documents/product.document';
@@ -12,8 +20,8 @@ export class ProductController {
     const id = generateRandIds();
 
     const product: ProductDocument = {
-        id, 
-        ...data
+      id,
+      ...data,
     };
     return this.productService.createProduct(product);
   }
@@ -22,31 +30,34 @@ export class ProductController {
   createProducts(@Body() data: Omit<ProductDocument, 'id'>[]) {
     const products: ProductDocument[] = [];
 
-    data.forEach(item=>{
-        const id = generateRandIds();
-        products.push({
-            id,
-            ...item
-        });
+    data.forEach((item) => {
+      const id = generateRandIds();
+      products.push({
+        id,
+        ...item,
+      });
     });
-  
+
     return this.productService.createProduct(products);
   }
 
   @Get('fetch-all-products')
-  fetchAllProducts(){
-    return this.productService.findAll()
+  fetchAllProducts() {
+    return this.productService.findAll();
   }
 
   @Patch('update-product/:id')
-  updateProduct(@Param('id') id: string, @Body() updateData: Partial<ProductDocument> ){
-    console.log("id",id);
-    console.log("updateData", updateData)
-    return this.productService.updateProduct(id,updateData);
+  updateProduct(
+    @Param('id') id: string,
+    @Body() updateData: Partial<ProductDocument>,
+  ) {
+    console.log('id', id);
+    console.log('updateData', updateData);
+    return this.productService.updateProduct(id, updateData);
   }
 
   @Delete('delete-product/:id')
-  deleteProduct(@Param('id') id: string){
-    return this.productService.deleteProduct(id)
+  deleteProduct(@Param('id') id: string) {
+    return this.productService.deleteProduct(id);
   }
 }

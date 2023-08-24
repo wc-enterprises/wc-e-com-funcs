@@ -1,9 +1,17 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { ProductPricingService } from './product-pricing.service';
 import { generateRandIds } from 'src/utils/generateRandIds';
 import { ProductPricingDocument } from './documents/product-pricing.document';
 
-@Controller('product-pricing')
+@Controller()
 export class ProductPricingController {
   constructor(private readonly productPricingService: ProductPricingService) {}
 
@@ -22,7 +30,7 @@ export class ProductPricingController {
   createPricings(@Body() data: Omit<ProductPricingDocument, 'id'>[]) {
     const pricings: ProductPricingDocument[] = [];
 
-    data.forEach(item => {
+    data.forEach((item) => {
       const id = generateRandIds();
       pricings.push({
         id,
@@ -44,7 +52,10 @@ export class ProductPricingController {
   }
 
   @Patch('update-pricing/:id')
-  updatePricing(@Param('id') id: string, @Body() updateData: Partial<ProductPricingDocument>) {
+  updatePricing(
+    @Param('id') id: string,
+    @Body() updateData: Partial<ProductPricingDocument>,
+  ) {
     return this.productPricingService.updatePricing(id, updateData);
   }
 

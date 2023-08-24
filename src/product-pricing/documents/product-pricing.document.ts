@@ -1,5 +1,3 @@
-import { Timestamp } from '@google-cloud/firestore';
-
 export class ProductPricingDocument {
   static collectionName = 'product_pricing';
 
@@ -8,8 +6,7 @@ export class ProductPricingDocument {
   basePrice: string;
   sellingPrice: string;
   dateCreated: string;
-  status: "ACTIVE" | "INACTIVE";
+  status: 'ACTIVE' | 'INACTIVE';
   discount: string;
-  discountUnit: "percentage" | "rupees";
-
+  discountUnit: 'percentage' | 'rupees';
 }

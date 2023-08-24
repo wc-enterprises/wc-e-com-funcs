@@ -1,11 +1,21 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { ProductCategoryService } from './product-cat.service';
 import { generateRandIds } from 'src/utils/generateRandIds';
 import { ProductCategoryDocument } from './documents/product-cat.document';
 
 @Controller()
 export class ProductCategoryController {
-  constructor(private readonly productCategoryService: ProductCategoryService) {}
+  constructor(
+    private readonly productCategoryService: ProductCategoryService,
+  ) {}
 
   @Post('create-category')
   createCategory(@Body() data: Omit<ProductCategoryDocument, 'id'>) {
@@ -22,7 +32,7 @@ export class ProductCategoryController {
   createCategories(@Body() data: Omit<ProductCategoryDocument, 'id'>[]) {
     const categories: ProductCategoryDocument[] = [];
 
-    data.forEach(item => {
+    data.forEach((item) => {
       const id = generateRandIds();
       categories.push({
         id,
@@ -44,7 +54,10 @@ export class ProductCategoryController {
   }
 
   @Patch('update-category/:id')
-  updateCategory(@Param('id') id: string, @Body() updateData: Partial<ProductCategoryDocument>) {
+  updateCategory(
+    @Param('id') id: string,
+    @Body() updateData: Partial<ProductCategoryDocument>,
+  ) {
     console.log('id', id);
     console.log('updateData', updateData);
     return this.productCategoryService.updateCategory(id, updateData);
