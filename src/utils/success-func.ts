@@ -14,3 +14,13 @@ export function createSuccessResponse<T>(
     data,
   };
 }
+
+export function createErrorResponse(
+  message: string,
+): StandardSuccessResponse<null> {
+  return {
+    status: 'SUCCESS',
+    message,
+    data: null,
+  };
+}

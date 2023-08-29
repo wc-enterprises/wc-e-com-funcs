@@ -11,16 +11,28 @@ export class ProductPricingService {
     private pricingCollection: CollectionReference<ProductPricingDocument>,
   ) {}
 
-  async createPricing(data: ProductPricingDocument | ProductPricingDocument[]): Promise<Pick<ProductPricingDocument, 'id' | 'productId' | 'basePrice'> | Pick<ProductPricingDocument, 'id' | 'productId' | 'basePrice'>[]> {
+  async createPricing(
+    data: ProductPricingDocument | ProductPricingDocument[],
+  ): Promise<
+    | Pick<ProductPricingDocument, 'id' | 'productId' | 'basePrice'>
+    | Pick<ProductPricingDocument, 'id' | 'productId' | 'basePrice'>[]
+  > {
     if (Array.isArray(data)) {
       const batch = this.pricingCollection.firestore.batch();
-      const createdPricings: Pick<ProductPricingDocument, 'id' | 'productId' | 'basePrice'>[] = [];
+      const createdPricings: Pick<
+        ProductPricingDocument,
+        'id' | 'productId' | 'basePrice'
+      >[] = [];
 
       for (const pricing of data) {
         const docRef = this.pricingCollection.doc(pricing.id);
         batch.set(docRef, pricing);
 
-        createdPricings.push({ id: pricing.id, productId: pricing.productId, basePrice: pricing.basePrice });
+        createdPricings.push({
+          id: pricing.id,
+          productId: pricing.productId,
+          basePrice: pricing.basePrice,
+        });
       }
 
       await batch.commit();
@@ -28,14 +40,18 @@ export class ProductPricingService {
     } else {
       const docRef = this.pricingCollection.doc(data.id);
       await docRef.set(data);
-      return { id: data.id, productId: data.productId, basePrice: data.basePrice };
+      return {
+        id: data.id,
+        productId: data.productId,
+        basePrice: data.basePrice,
+      };
     }
   }
 
   async findAll(): Promise<ProductPricingDocument[]> {
     const snapshot = await this.pricingCollection.get();
     const pricings: ProductPricingDocument[] = [];
-    snapshot.forEach(doc => pricings.push(doc.data()));
+    snapshot.forEach((doc) => pricings.push(doc.data()));
     return pricings;
   }
 
@@ -50,7 +66,10 @@ export class ProductPricingService {
     }
   }
 
-  async updatePricing(id: string, newData: Partial<ProductPricingDocument>): Promise<void> {
+  async updatePricing(
+    id: string,
+    newData: Partial<ProductPricingDocument>,
+  ): Promise<void> {
     const docRef = this.pricingCollection.doc(id);
     await docRef.update(newData);
   }

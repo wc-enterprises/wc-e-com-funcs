@@ -10,6 +10,11 @@ import {
 import { ProductCategoryService } from './product-cat.service';
 import { generateRandIds } from 'src/utils/generateRandIds';
 import { ProductCategoryDocument } from './documents/product-cat.document';
+import {
+  StandardSuccessResponse,
+  createErrorResponse,
+  createSuccessResponse,
+} from 'src/utils/success-func';
 
 @Controller()
 export class ProductCategoryController {
@@ -49,8 +54,20 @@ export class ProductCategoryController {
   }
 
   @Get('fetch-all-categories')
-  fetchAllCategories() {
-    return this.productCategoryService.findAll();
+  async fetchAllCategories(): Promise<
+    StandardSuccessResponse<ProductCategoryDocument[]>
+  > {
+    try {
+      const categories = await this.productCategoryService.findAll();
+      return createSuccessResponse(
+        'Product categories fetched successfully',
+        categories,
+      );
+    } catch (err) {
+      return createErrorResponse(
+        `Errored while fetching product categories: ${err.message}`,
+      );
+    }
   }
 
   @Patch('update-category/:id')

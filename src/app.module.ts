@@ -11,6 +11,8 @@ import { ProductPricingController } from './product-pricing/product-pricing.cont
 import { ProductPricingService } from './product-pricing/product-pricing.service';
 import { ProductAttributeController } from './product-attribute/product-attribute.controller';
 import { ProductAttributeService } from './product-attribute/product-attribute.service';
+import { ForFrontendController } from './for-frontends/for-frontends.controller';
+import { ForFrontendService } from './for-frontends/for-frontends.service';
 
 @Module({
   imports: [
@@ -31,6 +33,7 @@ import { ProductAttributeService } from './product-attribute/product-attribute.s
     ProductCategoryController,
     ProductPricingController,
     ProductAttributeController,
+    ForFrontendController,
   ],
   providers: [
     AppService,
@@ -38,6 +41,7 @@ import { ProductAttributeService } from './product-attribute/product-attribute.s
     ProductCategoryService,
     ProductPricingService,
     ProductAttributeService,
+    ForFrontendService,
   ],
 })
 export class AppModule {}

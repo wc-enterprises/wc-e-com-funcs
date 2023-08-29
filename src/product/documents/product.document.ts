@@ -1,4 +1,4 @@
-import { Timestamp } from '@google-cloud/firestore';
+import { TProductStatus, TUnits } from 'src/utils/interface';
 
 export class ProductDocument {
   static collectionName = 'product';
@@ -7,8 +7,8 @@ export class ProductDocument {
   name: string;
   description: string;
   imagePath: string;
-  status: 'ACTIVE' | 'INACTIVE';
-  unit: 'kg' | 'unit' | 'package';
+  status: TProductStatus;
+  unit: TUnits;
   categoryId: string;
   unitsInStock: number;
 }

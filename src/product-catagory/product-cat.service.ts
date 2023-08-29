@@ -66,14 +66,12 @@ export class ProductCategoryService {
     }
   }
 
-  async findAll(): Promise<StandardSuccessResponse<ProductCategoryDocument[]>> {
+  async findAll(): Promise<ProductCategoryDocument[]> {
+    this.logger.log(`Received request to fetch all product categories`);
     const snapshot = await this.productCollection.get();
     const categories: ProductCategoryDocument[] = [];
     snapshot.forEach((doc) => categories.push(doc.data()));
-    return createSuccessResponse(
-      'Product categories fetched successfully',
-      categories,
-    );
+    return categories;
   }
 
   async updateCategory(
