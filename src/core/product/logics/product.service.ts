@@ -1,10 +1,10 @@
 import { Injectable, Inject, Logger } from '@nestjs/common';
 import { CollectionReference } from '@google-cloud/firestore';
-import { ProductDocument } from './documents/product.document';
+import { ProductDocument } from '../../../firestore/documents/firebase.document';
 import {
-  StandardSuccessResponse,
+  StandardResponse,
   createSuccessResponse,
-} from 'src/utils/success-func';
+} from 'src/utils/std-response';
 
 @Injectable()
 export class ProductService {
@@ -18,7 +18,7 @@ export class ProductService {
   async createProduct(
     data: ProductDocument | ProductDocument[],
   ): Promise<
-    StandardSuccessResponse<
+    StandardResponse<
       | Pick<ProductDocument, 'id' | 'name'>
       | Pick<ProductDocument, 'id' | 'name'>[]
     >

@@ -1,35 +1,17 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { ProductCategoryDocument } from 'src/product-catagory/documents/product-cat.document';
-import { ProductCategoryService } from 'src/product-catagory/product-cat.service';
-import { ProductPricingDocument } from 'src/product-pricing/documents/product-pricing.document';
-import { ProductPricingService } from 'src/product-pricing/product-pricing.service';
-import { ProductDocument } from 'src/product/documents/product.document';
-import { ProductService } from 'src/product/product.service';
-import { TDiscountUnits, TUnits } from 'src/utils/interface';
-
-export interface ICategorizedProducts {
-  categoryId: string;
-  categoryName: string;
-  categoryDescription: string;
-  products: IProduct[];
-}
-
-export interface IProduct {
-  id: string;
-  name: string;
-  description: string;
-  imagePath: string;
-  unit: TUnits;
-  unitsInStock: number;
-  pricingId: string;
-  sellingPrice: string;
-  discount: string;
-  discountUnit: TDiscountUnits;
-}
+import {
+  ProductDocument,
+  ProductCategoryDocument,
+  ProductPricingDocument,
+} from 'src/firestore/documents/firebase.document';
+import { ICategorizedProducts, IProductWithPrice } from 'src/utils/interface';
+import { ProductCategoryService } from './product-category.service';
+import { ProductPricingService } from './product-pricing.service';
+import { ProductService } from './product.service';
 
 @Injectable()
-export class ForFrontendService {
-  private logger: Logger = new Logger(ForFrontendService.name);
+export class ProductAggregateService {
+  private logger: Logger = new Logger(ProductAggregateService.name);
 
   constructor(
     private productService: ProductService,
@@ -37,11 +19,13 @@ export class ForFrontendService {
     private productPricingService: ProductPricingService,
   ) {}
 
-  async getCategorisedProducts(): Promise<ICategorizedProducts[]> {
+  async getCategorisedProducts(
+    requestId: string,
+  ): Promise<ICategorizedProducts[]> {
     const products: ProductDocument[] = await this.productService.findAll();
 
     const categories: ProductCategoryDocument[] =
-      await this.productCategoryService.findAll();
+      await this.productCategoryService.findAll(requestId);
 
     const productPricing: ProductPricingDocument[] =
       await this.productPricingService.findAll();
@@ -49,7 +33,8 @@ export class ForFrontendService {
     const categorizedProducts: ICategorizedProducts[] = [];
 
     // Create a map to store products by category ID
-    const productsByCategory: { [categoryId: string]: IProduct[] } = {};
+    const productsByCategory: { [categoryId: string]: IProductWithPrice[] } =
+      {};
 
     // Populate the productsByCategory map
     products.forEach((product) => {
@@ -60,7 +45,7 @@ export class ForFrontendService {
       const pricing = productPricing.find(
         (pricing) => pricing.productId === product.id,
       );
-      const productData: IProduct = {
+      const productData: IProductWithPrice = {
         id: product.id,
         name: product.name,
         description: product.description,

@@ -1,11 +1,21 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
-import { ProductAttributeService } from './product-attribute.service';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
+import { ProductAttributeService } from '../logics/product-attribute.service';
 import { generateRandIds } from 'src/utils/generateRandIds';
-import { ProductAttributeDocument } from './documents/product-attribute.document';
+import { ProductAttributeDocument } from '../../../firestore/documents/firebase.document';
 
 @Controller('product-attributes')
 export class ProductAttributeController {
-  constructor(private readonly productAttributeService: ProductAttributeService) {}
+  constructor(
+    private readonly productAttributeService: ProductAttributeService,
+  ) {}
 
   @Post('create-attribute')
   createAttribute(@Body() data: Omit<ProductAttributeDocument, 'id'>) {
@@ -22,7 +32,7 @@ export class ProductAttributeController {
   createAttributes(@Body() data: Omit<ProductAttributeDocument, 'id'>[]) {
     const attributes: ProductAttributeDocument[] = [];
 
-    data.forEach(item => {
+    data.forEach((item) => {
       const id = generateRandIds();
       attributes.push({
         id,
@@ -44,7 +54,10 @@ export class ProductAttributeController {
   }
 
   @Patch('update-attribute/:id')
-  updateAttribute(@Param('id') id: string, @Body() updateData: Partial<ProductAttributeDocument>) {
+  updateAttribute(
+    @Param('id') id: string,
+    @Body() updateData: Partial<ProductAttributeDocument>,
+  ) {
     return this.productAttributeService.updateAttribute(id, updateData);
   }
 

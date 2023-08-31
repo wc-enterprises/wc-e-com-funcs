@@ -1,6 +1,6 @@
 import { Injectable, Inject, Logger } from '@nestjs/common';
 import { CollectionReference, DocumentSnapshot } from '@google-cloud/firestore';
-import { ProductAttributeDocument } from './documents/product-attribute.document';
+import { ProductAttributeDocument } from '../../../firestore/documents/firebase.document';
 
 @Injectable()
 export class ProductAttributeService {
@@ -11,16 +11,25 @@ export class ProductAttributeService {
     private attributeCollection: CollectionReference<ProductAttributeDocument>,
   ) {}
 
-  async createAttribute(data: ProductAttributeDocument | ProductAttributeDocument[]) {
+  async createAttribute(
+    data: ProductAttributeDocument | ProductAttributeDocument[],
+  ) {
     if (Array.isArray(data)) {
       const batch = this.attributeCollection.firestore.batch();
-      const createdAttributes: Pick<ProductAttributeDocument, 'id' | 'productId' | 'attributeKey'>[] = [];
+      const createdAttributes: Pick<
+        ProductAttributeDocument,
+        'id' | 'productId' | 'attributeKey'
+      >[] = [];
 
       for (const attribute of data) {
         const docRef = this.attributeCollection.doc(attribute.id);
         batch.set(docRef, attribute);
 
-        createdAttributes.push({ id: attribute.id, productId: attribute.productId, attributeKey: attribute.attributeKey });
+        createdAttributes.push({
+          id: attribute.id,
+          productId: attribute.productId,
+          attributeKey: attribute.attributeKey,
+        });
       }
 
       await batch.commit();
@@ -28,14 +37,18 @@ export class ProductAttributeService {
     } else {
       const docRef = this.attributeCollection.doc(data.id);
       await docRef.set(data);
-      return { id: data.id, productId: data.productId, attributeKey: data.attributeKey };
+      return {
+        id: data.id,
+        productId: data.productId,
+        attributeKey: data.attributeKey,
+      };
     }
   }
 
   async findAll(): Promise<ProductAttributeDocument[]> {
     const snapshot = await this.attributeCollection.get();
     const attributes: ProductAttributeDocument[] = [];
-    snapshot.forEach(doc => attributes.push(doc.data()));
+    snapshot.forEach((doc) => attributes.push(doc.data()));
     return attributes;
   }
 
@@ -50,7 +63,10 @@ export class ProductAttributeService {
     }
   }
 
-  async updateAttribute(id: string, newData: Partial<ProductAttributeDocument>): Promise<void> {
+  async updateAttribute(
+    id: string,
+    newData: Partial<ProductAttributeDocument>,
+  ): Promise<void> {
     const docRef = this.attributeCollection.doc(id);
     await docRef.update(newData);
   }

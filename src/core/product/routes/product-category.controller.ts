@@ -6,21 +6,25 @@ import {
   Param,
   Patch,
   Post,
+  Req,
 } from '@nestjs/common';
-import { ProductCategoryService } from './product-cat.service';
+import { ProductCategoryService } from '../logics/product-category.service';
 import { generateRandIds } from 'src/utils/generateRandIds';
-import { ProductCategoryDocument } from './documents/product-cat.document';
+
 import {
-  StandardSuccessResponse,
+  StandardResponse,
   createErrorResponse,
   createSuccessResponse,
-} from 'src/utils/success-func';
+} from 'src/utils/std-response';
+import { ProductCategoryDocument } from '../../../firestore/documents/firebase.document';
+import { CustomLoggerService } from 'src/logger/custom-logger.service';
 
 @Controller()
 export class ProductCategoryController {
-  constructor(
-    private readonly productCategoryService: ProductCategoryService,
-  ) {}
+  private logger: CustomLoggerService;
+  constructor(private readonly productCategoryService: ProductCategoryService) {
+    this.logger = new CustomLoggerService('PRODUCT_CATEGORY_CONTROLLER');
+  }
 
   @Post('create-category')
   createCategory(@Body() data: Omit<ProductCategoryDocument, 'id'>) {
@@ -54,19 +58,33 @@ export class ProductCategoryController {
   }
 
   @Get('fetch-all-categories')
-  async fetchAllCategories(): Promise<
-    StandardSuccessResponse<ProductCategoryDocument[]>
-  > {
+  async fetchAllCategories(
+    @Req() request: { requestId: string },
+  ): Promise<StandardResponse<ProductCategoryDocument[]>> {
     try {
-      const categories = await this.productCategoryService.findAll();
+      this.logger.log(
+        request.requestId,
+        `Received request to fetch all categories.`,
+      );
+      const categories = await this.productCategoryService.findAll(
+        request.requestId,
+      );
+      this.logger.log(
+        request.requestId,
+        `Fetched all categories successfully.`,
+      );
       return createSuccessResponse(
         'Product categories fetched successfully',
         categories,
       );
     } catch (err) {
-      return createErrorResponse(
-        `Errored while fetching product categories: ${err.message}`,
+      this.logger.error(
+        request.requestId,
+        `Errored while fetching all categories with error: ${JSON.stringify(
+          err,
+        )}`,
       );
+      return createErrorResponse(err.errorCode);
     }
   }
 

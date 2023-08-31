@@ -1,6 +1,6 @@
 import { Injectable, Inject, Logger } from '@nestjs/common';
 import { CollectionReference, DocumentSnapshot } from '@google-cloud/firestore';
-import { ProductPricingDocument } from './documents/product-pricing.document';
+import { ProductPricingDocument } from '../../../firestore/documents/firebase.document';
 
 @Injectable()
 export class ProductPricingService {

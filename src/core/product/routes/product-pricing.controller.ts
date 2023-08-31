@@ -7,9 +7,9 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { ProductPricingService } from './product-pricing.service';
+import { ProductPricingService } from '../logics/product-pricing.service';
 import { generateRandIds } from 'src/utils/generateRandIds';
-import { ProductPricingDocument } from './documents/product-pricing.document';
+import { ProductPricingDocument } from '../../../firestore/documents/firebase.document';
 
 @Controller()
 export class ProductPricingController {
