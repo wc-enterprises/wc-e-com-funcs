@@ -22,7 +22,8 @@ export class ProductService {
       | Pick<ProductDocument, 'id' | 'name'>
       | Pick<ProductDocument, 'id' | 'name'>[]
     >
-  > {
+  > 
+  {
     if (Array.isArray(data)) {
       const batch = this.productCollection.firestore.batch();
       const createdProducts: Pick<ProductDocument, 'id' | 'name'>[] = [];

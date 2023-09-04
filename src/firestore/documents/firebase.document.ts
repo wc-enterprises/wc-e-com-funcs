@@ -48,6 +48,25 @@ export class ProductPricingDocument {
 /**
  * Order and order related documents come here.
  */
+export class OrderDocument{
+    static collectionName = 'order';
+  
+    id: string;
+    customer_id : string;
+    status :  'ACTIVE | INACTIVE';
+    date_created :string;
+    total : number ;
+    note : string;
+}
+
+export class OrderLineItem{
+  static collectionName = 'Order_line_item';
+  
+  id : string;
+  order_id : string;
+  product_id : string;
+  quantity : string;
+}
 
 // Payments
 /**
