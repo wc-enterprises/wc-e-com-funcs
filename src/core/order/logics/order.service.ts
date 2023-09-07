@@ -23,10 +23,11 @@ export class OrderService{
         | Pick<OrderDocument , 'id'>[]
       >
       >{
+        let Orderids = []
         if (Array.isArray(data)) {
             const batch = this.orderCollection.firestore.batch();
             const createdOrder: Pick<OrderDocument, 'id' >[] = [];
-      
+
             for (const order of data) {
               const docRef = this.orderCollection.doc(order.id);
               batch.set(docRef, order);

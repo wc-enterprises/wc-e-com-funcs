@@ -60,7 +60,7 @@ export class OrderDocument{
 }
 
 export class OrderLineItems{
-  static collectionName = 'Order_line_item';
+  static collectionName = 'Order_line_items';
   
   id : string;
   order_id : string;

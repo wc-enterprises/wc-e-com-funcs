@@ -12,10 +12,11 @@ import { generateRandIds } from 'src/utils/generateRandIds';
 import { OrderDocument } from '../../../firestore/documents/firebase.document';
 import {Iorder} from 'src/utils/interface';
 import {Validation} from 'src/utils/Validation'
+import { OrderAggregateService } from '../logics/order-aggregate.service';
 
 @Controller()
 export class OrderController {
-    constructor(private readonly OrderService: OrderService) {}
+    constructor(private readonly OrderService: OrderService, private readonly OrderAggregateService: OrderAggregateService) {}
 
   //   @Post('create-order')
   //   createOrder(@Body() data: Omit<OrderDocument, 'id'>) {
@@ -56,8 +57,8 @@ export class OrderController {
         id,
         date_created : date.toLocaleDateString(),
         total : 0,
-      }
-      return this.OrderService.createOrder(order)
+      }                                             //req id
+      return this.OrderAggregateService.createOrder(data.customer_id,order)
     }
     catch(err){
       console.log(err.message)
