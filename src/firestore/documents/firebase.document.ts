@@ -56,10 +56,10 @@ export class OrderDocument{
     status :  'ACTIVE | INACTIVE';
     date_created :string;
     total : number ;
-    note : string;
+    note ?: string;
 }
 
-export class OrderLineItem{
+export class OrderLineItems{
   static collectionName = 'Order_line_item';
   
   id : string;

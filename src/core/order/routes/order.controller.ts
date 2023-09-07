@@ -10,26 +10,28 @@ import {
 import { OrderService } from '../logics/order.service';
 import { generateRandIds } from 'src/utils/generateRandIds';
 import { OrderDocument } from '../../../firestore/documents/firebase.document';
+import {Iorder} from 'src/utils/interface';
+import {Validation} from 'src/utils/Validation'
 
 @Controller()
 export class OrderController {
     constructor(private readonly OrderService: OrderService) {}
 
-    @Post('create-order')
-    createOrder(@Body() data: Omit<OrderDocument, 'id'>) {
-    const id = generateRandIds();
+  //   @Post('create-order')
+  //   createOrder(@Body() data: Omit<OrderDocument, 'id'>) {
+  //   const id = generateRandIds();
 
-    const order: OrderDocument = {
-      id,
-      ...data,
-    };
-    return this.OrderService.createOrder(order);
-  }
-
+  //   const order: OrderDocument = {
+  //     id,
+  //     ...data,
+  //   };
+  //   return this.OrderService.createOrder(order);
+  // }
+  
   @Post('create-orders')
   createOrders(@Body() data: Omit<OrderDocument, 'id'>[]) {
     const products: OrderDocument[] = [];
-
+  
     data.forEach((item) => {
       const id = generateRandIds();
       products.push({
@@ -40,6 +42,72 @@ export class OrderController {
 
     return this.OrderService.createOrder(products);
   }
+
+  @Post('create-order')
+  createOrder(@Body() data:Omit<Iorder , "orderLineItems">){
+    try{
+      const id = generateRandIds();
+      const date = new Date()
+
+      //Validation
+      Validation.OrderValidator(data)
+      const order : OrderDocument = {
+        ...data,
+        id,
+        date_created : date.toLocaleDateString(),
+        total : 0,
+      }
+      return this.OrderService.createOrder(order)
+    }
+    catch(err){
+      console.log(err.message)
+      return{
+        statusCode : 400,
+        message : err.message
+      }
+    }  
+  }
+
+
+  //   @Post('create-order')
+  //   createOrder(@Body() data: Omit<Iorder , 'orderLineItems'>) {
+  //   try{
+  //     const id = generateRandIds();
+  //     const date = new Date()
+
+  //     Validation.OrderValidator(data)
+
+  //     const order:OrderDocument = {
+  //       ...data,
+  //       id,  
+  //       date_created :date.toLocaleDateString(),
+  //       total:0,
+  //     };
+  //     return this.OrderService.createOrder(order);
+  //   }
+  //   catch(err){
+  //       console.log(err.message)
+  //   }
+   
+  // }
+
+  
+  // @Post('create-orders')
+  // createOrders(@Body() data:{orderLineItems: {product_id: string; quantity: string}[] }) {
+  //   const products: OrderDocument[] = [];
+    
+  //   Validation.orderLineItemsValidator(data)
+
+  //   data.orderLineItems.forEach((item) => {
+  //     const id = generateRandIds();
+  //     products.push({
+        
+  //       ...item,
+  //     });
+  //   });
+
+  //   return this.OrderService.createOrder(products);
+  // }
 
   @Get('fetch-all-orders')
   fetchAllOrders() {

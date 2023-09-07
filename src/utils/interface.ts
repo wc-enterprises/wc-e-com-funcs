@@ -27,3 +27,13 @@ export interface IProductWithPrice {
   discount: string;
   discountUnit: TDiscountUnits;
 }
+
+export interface Iorder {
+    customer_id : string;
+    status :  'ACTIVE | INACTIVE';
+    note ?: string;
+    orderLineItems : {
+      product_id : string;
+      quantity :  string;
+    }[];
+}

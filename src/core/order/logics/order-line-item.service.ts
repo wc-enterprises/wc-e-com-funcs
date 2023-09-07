@@ -1,6 +1,6 @@
 import { Injectable, Inject, Logger } from '@nestjs/common';
 import { CollectionReference } from '@google-cloud/firestore';
-import { OrderLineItem } from '../../../firestore/documents/firebase.document';
+import { OrderLineItems } from '../../../firestore/documents/firebase.document';
 import {
   StandardResponse,
   createSuccessResponse,
@@ -11,21 +11,21 @@ export class OrderLineItemservice{
     private logger : Logger = new Logger(OrderLineItemservice.name);
 
     constructor(
-        @Inject(OrderLineItem.collectionName)
-        private orderCollection:  CollectionReference<OrderLineItem>
+        @Inject(OrderLineItems.collectionName)
+        private orderCollection:  CollectionReference<OrderLineItems>
     ){}
 
     async createOrderLine(
-        data : OrderLineItem | OrderLineItem[]
+        data : OrderLineItems | OrderLineItems[]
     ):Promise<
       StandardResponse<
-        | Pick<OrderLineItem , 'id'>
-        | Pick<OrderLineItem , 'id'>[]
+        | Pick<OrderLineItems , 'id'>
+        | Pick<OrderLineItems , 'id'>[]
       >
       >{
         if (Array.isArray(data)) {
             const batch = this.orderCollection.firestore.batch();
-            const createdOrderLineItem: Pick<OrderLineItem, 'id' >[] = [];
+            const createdOrderLineItem: Pick<OrderLineItems, 'id' >[] = [];
       
             for (const orderLine of data) {
               const docRef = this.orderCollection.doc(orderLine.id);
@@ -48,16 +48,16 @@ export class OrderLineItemservice{
             }
         }
 
-    async findAll(): Promise<OrderLineItem[]> {
+    async findAll(): Promise<OrderLineItems[]> {
         const snapshot = await this.orderCollection.get();
-        const Ordersline: OrderLineItem[] = [];
+        const Ordersline: OrderLineItems[] = [];
         snapshot.forEach((doc) => Ordersline.push(doc.data()));
         return Ordersline;
         }
 
     async updateOrderLine(
         id: string,
-        newData: Partial<OrderLineItem>,
+        newData: Partial<OrderLineItems>,
         ): Promise<void> {
         const docRef = this.orderCollection.doc(id);
         await docRef.update(newData);
