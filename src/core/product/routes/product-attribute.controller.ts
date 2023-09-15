@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Req,
 } from '@nestjs/common';
 import { ProductAttributeService } from '../logics/product-attribute.service';
 import { generateRandIds } from 'src/utils/generateRandIds';
@@ -17,19 +18,25 @@ export class ProductAttributeController {
     private readonly productAttributeService: ProductAttributeService,
   ) {}
 
-  @Post('create-attribute')
-  createAttribute(@Body() data: Omit<ProductAttributeDocument, 'id'>) {
+  @Post('create')
+  createAttribute(
+    @Req() request: { requestId: string },
+    @Body() data: Omit<ProductAttributeDocument, 'id'>,
+  ) {
     const id = generateRandIds();
 
     const attribute: ProductAttributeDocument = {
       id,
       ...data,
     };
-    return this.productAttributeService.createAttribute(attribute);
+    return this.productAttributeService.create(request.requestId, attribute);
   }
 
-  @Post('create-attributes')
-  createAttributes(@Body() data: Omit<ProductAttributeDocument, 'id'>[]) {
+  @Post('create-many')
+  createAttributes(
+    @Req() request: { requestId: string },
+    @Body() data: Omit<ProductAttributeDocument, 'id'>[],
+  ) {
     const attributes: ProductAttributeDocument[] = [];
 
     data.forEach((item) => {
@@ -40,29 +47,29 @@ export class ProductAttributeController {
       });
     });
 
-    return this.productAttributeService.createAttribute(attributes);
+    return this.productAttributeService.create(request.requestId, attributes);
   }
 
-  @Get('fetch-all-attributes')
+  @Get('fetch-all')
   fetchAllAttributes() {
     return this.productAttributeService.findAll();
   }
 
-  @Get('fetch-attribute/:id')
+  @Get('fetch-one/:id')
   fetchAttribute(@Param('id') id: string) {
     return this.productAttributeService.findOne(id);
   }
 
-  @Patch('update-attribute/:id')
+  @Patch('update/:id')
   updateAttribute(
     @Param('id') id: string,
     @Body() updateData: Partial<ProductAttributeDocument>,
   ) {
-    return this.productAttributeService.updateAttribute(id, updateData);
+    return this.productAttributeService.update(id, updateData);
   }
 
-  @Delete('delete-attribute/:id')
+  @Delete('delete/:id')
   deleteAttribute(@Param('id') id: string) {
-    return this.productAttributeService.deleteAttribute(id);
+    return this.productAttributeService.delete(id);
   }
 }

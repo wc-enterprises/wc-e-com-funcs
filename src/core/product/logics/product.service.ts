@@ -15,7 +15,7 @@ export class ProductService {
     private productCollection: CollectionReference<ProductDocument>,
   ) {}
 
-  async createProduct(
+  async create(
     data: ProductDocument | ProductDocument[],
   ): Promise<
     StandardResponse<
@@ -49,6 +49,17 @@ export class ProductService {
     }
   }
 
+  async findOne(id: string): Promise<ProductDocument | null> {
+    const docRef = await this.productCollection.doc(id);
+    const snapshot = await docRef.get();
+
+    if (snapshot.exists) {
+      return snapshot.data() as ProductDocument;
+    } else {
+      return null;
+    }
+  }
+
   async findAll(): Promise<ProductDocument[]> {
     const snapshot = await this.productCollection.get();
     const products: ProductDocument[] = [];
@@ -56,15 +67,12 @@ export class ProductService {
     return products;
   }
 
-  async updateProduct(
-    id: string,
-    newData: Partial<ProductDocument>,
-  ): Promise<void> {
+  async update(id: string, newData: Partial<ProductDocument>): Promise<void> {
     const docRef = this.productCollection.doc(id);
     await docRef.update(newData);
   }
 
-  async deleteProduct(id: string): Promise<void> {
+  async delete(id: string): Promise<void> {
     const docRef = this.productCollection.doc(id);
     await docRef.delete();
   }

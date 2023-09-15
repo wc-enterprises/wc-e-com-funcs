@@ -3,6 +3,7 @@ import {
   ProductCategoryDocument,
   ProductDocument,
   ProductPricingDocument,
+  ProductVariantDocument,
 } from 'src/firestore/documents/firebase.document';
 
 export const FirestoreDatabaseProvider = 'firestoredb';
@@ -12,4 +13,5 @@ export const FirestoreCollectionProviders: string[] = [
   ProductCategoryDocument.collectionName,
   ProductPricingDocument.collectionName,
   ProductAttributeDocument.collectionName,
+  ProductVariantDocument.collectionName,
 ];

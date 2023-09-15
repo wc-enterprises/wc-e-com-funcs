@@ -6,24 +6,35 @@ import {
   Param,
   Patch,
   Post,
+  Req,
 } from '@nestjs/common';
 import { ProductService } from '../logics/product.service';
 import { generateRandIds } from 'src/utils/generateRandIds';
 import { ProductDocument } from '../../../firestore/documents/firebase.document';
+import { ProductAggregateService } from '../logics/product-aggregate.service';
+import { ICreateProduct, ICreateVariant } from 'src/utils/interface';
 
 @Controller()
 export class ProductController {
-  constructor(private readonly productService: ProductService) {}
+  constructor(
+    private readonly productService: ProductService,
+    private readonly PAS: ProductAggregateService,
+  ) {}
 
   @Post('create-product')
-  createProduct(@Body() data: Omit<ProductDocument, 'id'>) {
-    const id = generateRandIds();
+  createProduct(
+    @Req() request: { requestId: string },
+    @Body() data: ICreateProduct,
+  ) {
+    return this.PAS.createProduct(request.requestId, data);
+  }
 
-    const product: ProductDocument = {
-      id,
-      ...data,
-    };
-    return this.productService.createProduct(product);
+  @Post('create-variant')
+  createVariant(
+    @Req() request: { requestId: string },
+    @Body() data: ICreateVariant,
+  ) {
+    return this.PAS.createVariant(request.requestId, data);
   }
 
   @Post('create-products')
@@ -38,12 +49,17 @@ export class ProductController {
       });
     });
 
-    return this.productService.createProduct(products);
+    return this.productService.create(products);
   }
 
   @Get('fetch-all-products')
   fetchAllProducts() {
     return this.productService.findAll();
+  }
+
+  @Get('fetch-one-product/:id')
+  fetchOneProduct(@Param('id') id: string) {
+    return this.productService.findOne(id);
   }
 
   @Patch('update-product/:id')
@@ -53,11 +69,11 @@ export class ProductController {
   ) {
     console.log('id', id);
     console.log('updateData', updateData);
-    return this.productService.updateProduct(id, updateData);
+    return this.productService.update(id, updateData);
   }
 
   @Delete('delete-product/:id')
   deleteProduct(@Param('id') id: string) {
-    return this.productService.deleteProduct(id);
+    return this.productService.delete(id);
   }
 }

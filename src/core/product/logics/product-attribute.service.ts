@@ -1,24 +1,34 @@
-import { Injectable, Inject, Logger } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { CollectionReference, DocumentSnapshot } from '@google-cloud/firestore';
 import { ProductAttributeDocument } from '../../../firestore/documents/firebase.document';
+import { CustomLoggerService } from 'src/logger/custom-logger.service';
 
 @Injectable()
 export class ProductAttributeService {
-  private logger: Logger = new Logger(ProductAttributeService.name);
+  private logger: CustomLoggerService = new CustomLoggerService(
+    ProductAttributeService.name,
+  );
 
   constructor(
     @Inject(ProductAttributeDocument.collectionName)
     private attributeCollection: CollectionReference<ProductAttributeDocument>,
   ) {}
 
-  async createAttribute(
+  async create(
+    requestId: string,
     data: ProductAttributeDocument | ProductAttributeDocument[],
   ) {
+    this.logger.log(
+      requestId,
+      `Received request to create product attribute for ${JSON.stringify(
+        data,
+      )}.`,
+    );
     if (Array.isArray(data)) {
       const batch = this.attributeCollection.firestore.batch();
       const createdAttributes: Pick<
         ProductAttributeDocument,
-        'id' | 'productId' | 'attributeKey'
+        'id' | 'productId' | 'key'
       >[] = [];
 
       for (const attribute of data) {
@@ -28,7 +38,7 @@ export class ProductAttributeService {
         createdAttributes.push({
           id: attribute.id,
           productId: attribute.productId,
-          attributeKey: attribute.attributeKey,
+          key: attribute.key,
         });
       }
 
@@ -40,7 +50,7 @@ export class ProductAttributeService {
       return {
         id: data.id,
         productId: data.productId,
-        attributeKey: data.attributeKey,
+        key: data.key,
       };
     }
   }
@@ -63,7 +73,7 @@ export class ProductAttributeService {
     }
   }
 
-  async updateAttribute(
+  async update(
     id: string,
     newData: Partial<ProductAttributeDocument>,
   ): Promise<void> {
@@ -71,7 +81,7 @@ export class ProductAttributeService {
     await docRef.update(newData);
   }
 
-  async deleteAttribute(id: string): Promise<void> {
+  async delete(id: string): Promise<void> {
     const docRef = this.attributeCollection.doc(id);
     await docRef.delete();
   }

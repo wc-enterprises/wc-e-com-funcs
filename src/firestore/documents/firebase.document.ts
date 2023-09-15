@@ -14,13 +14,28 @@ export class ProductDocument {
   unitsInStock: number;
 }
 
+export class ProductVariantDocument {
+  static collectionName = 'variant';
+
+  id: string;
+  productId: string;
+  name: string;
+  description: string;
+  imagePath: string;
+  status: TProductStatus;
+  unit: TUnits;
+  categoryId: string;
+  unitsInStock: number;
+}
+
 export class ProductAttributeDocument {
   static collectionName = 'product_attribute';
 
   id: string;
   productId: string;
-  attributeKey: string;
-  attributeValue: any;
+  key: string;
+  value: any;
+  asset?: any;
 }
 
 export class ProductCategoryDocument {
