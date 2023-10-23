@@ -12,8 +12,10 @@ import {
   ICreateAttribute,
   ICreateProduct,
   ICreateVariant,
+  IProductAggregate,
   IProductWithPrice,
   IProductWithPriceVariantsAndAttributes,
+  IVariantAggregate,
   IVariantWithPriceAndAttribute,
 } from 'src/utils/interface';
 import { ProductCategoryService } from './product-category.service';
@@ -315,8 +317,10 @@ export class ProductAggregateService {
         unitsInStock: product.unitsInStock,
         pricingId: pricing ? pricing.id : '',
         sellingPrice: pricing ? pricing.sellingPrice : '0',
+        basePrice: pricing ? pricing.basePrice : '0',
         discount: pricing ? pricing.discount : '0',
         discountUnit: pricing ? pricing.discountUnit : 'percentage',
+        status: product.status,
 
         attributes: attributes.map((item) => {
           return {
@@ -352,43 +356,70 @@ export class ProductAggregateService {
   async getProductById(
     requestId: string,
     productId: string,
-  ): Promise<IProductWithPriceVariantsAndAttributes | null> {
+  ): Promise<IProductAggregate | null> {
+    console.log(`Fetching product by ID: ${productId}`);
     const product: ProductDocument =
       await this.productService.findOne(productId);
 
     if (!product) {
+      console.log(`Product not found for ID: ${productId}`);
       return null; // Return null if the product is not found
     }
 
+    console.log(`Found product: ${product.name}`);
+
+    const category = await this.productCategoryService.findOneCategory(
+      product.categoryId,
+    );
+    console.log(`Fetching category for product: ${category.data.name}`);
+
     const pricing: ProductPricingDocument =
-      await this.productPricingService.findOne(productId);
+      await this.productPricingService.getPricingOfAProduct(productId);
+    console.log(`Fetching pricing for product: ${pricing.id}`);
 
     const attributes: ProductAttributeDocument[] =
       await this.productAttributesService.getProductAttributesOfAProduct(
         productId,
       );
+    console.log(
+      `Fetching attributes for product: ${attributes.length} attributes found`,
+    );
 
     const variants: ProductVariantDocument[] =
       await this.productVariantService.getVariantsOfAProduct(productId);
+    console.log(
+      `Fetching variants for product: ${variants.length} variants found`,
+    );
 
     const variantWithAttributeAndPrice = [];
 
     if (variants.length) {
       for (const variant of variants) {
+        console.log(`Processing variant: ${variant.name}`);
+        const category = await this.productCategoryService.findOneCategory(
+          variant.categoryId,
+        );
+        console.log(`Fetching category for variant: ${category.data.name}`);
+
         const variantPricing: ProductPricingDocument =
-          await this.productPricingService.findOne(variant.id);
+          await this.productPricingService.getPricingOfAProduct(variant.id);
+        console.log(`Fetching pricing for variant: ${variantPricing?.id}`);
 
         const variantAttributes: ProductAttributeDocument[] =
           await this.productAttributesService.getProductAttributesOfAProduct(
             variant.id,
           );
+        console.log(
+          `Fetching attributes for variant: ${variantAttributes.length} attributes found`,
+        );
 
-        const variantWithPrice: IVariantWithPriceAndAttribute = {
+        const variantWithPrice: IVariantAggregate = {
           ...variant,
-          pricingId: variantPricing.id ?? pricing.id,
-          sellingPrice: variantPricing.sellingPrice ?? pricing.sellingPrice,
-          discount: variantPricing.discount ?? pricing.discount,
-          discountUnit: variantPricing.discountUnit ?? pricing.discountUnit,
+          categoryName: category.data.name,
+          pricingId: variantPricing?.id ?? pricing.id,
+          sellingPrice: variantPricing?.sellingPrice ?? pricing.sellingPrice,
+          discount: variantPricing?.discount ?? pricing.discount,
+          discountUnit: variantPricing?.discountUnit ?? pricing.discountUnit,
           attributes: variantAttributes.map((item) => {
             return {
               key: item.key,
@@ -402,14 +433,17 @@ export class ProductAggregateService {
       }
     }
 
-    const productData: IProductWithPriceVariantsAndAttributes = {
+    const productData: IProductAggregate = {
       id: product.id,
       name: product.name,
+      categoryName: category.data.name,
       description: product.description,
       imagePath: product.imagePath,
       unit: product.unit,
       unitsInStock: product.unitsInStock,
+      status: product.status,
       pricingId: pricing ? pricing.id : '',
+      basePrice: pricing ? pricing.basePrice : '0',
       sellingPrice: pricing ? pricing.sellingPrice : '0',
       discount: pricing ? pricing.discount : '0',
       discountUnit: pricing ? pricing.discountUnit : 'percentage',
@@ -423,6 +457,7 @@ export class ProductAggregateService {
       variants: variantWithAttributeAndPrice,
     };
 
+    console.log(`Product data fetched successfully`);
     return productData;
   }
 }

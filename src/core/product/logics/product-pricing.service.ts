@@ -66,6 +66,22 @@ export class ProductPricingService {
     }
   }
 
+  async getPricingOfAProduct(
+    productId: string,
+  ): Promise<ProductPricingDocument> {
+    const snapshot = await this.pricingCollection
+      .where('productId', '==', productId)
+      .get();
+
+    let pricing: ProductPricingDocument | null = null;
+
+    snapshot.forEach((doc) => {
+      pricing = doc.data() as ProductPricingDocument;
+    });
+
+    return pricing;
+  }
+
   async updatePricing(
     id: string,
     newData: Partial<ProductPricingDocument>,

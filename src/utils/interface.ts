@@ -44,12 +44,19 @@ export interface IProductWithPriceVariantsAndAttributes {
   unitsInStock: number;
   pricingId: string;
   sellingPrice: string;
+  basePrice: string;
   discount: string;
   discountUnit: TDiscountUnits;
+  status: TProductStatus;
 
   attributes: IAttribute[] | null;
 
   variants: IVariantWithPriceAndAttribute[] | null;
+}
+
+export interface IProductAggregate
+  extends IProductWithPriceVariantsAndAttributes {
+  categoryName: string;
 }
 
 export interface IVariantWithPriceAndAttribute {
@@ -66,6 +73,10 @@ export interface IVariantWithPriceAndAttribute {
   discountUnit: TDiscountUnits;
 
   attributes: IAttribute[] | null;
+}
+
+export interface IVariantAggregate extends IVariantWithPriceAndAttribute {
+  categoryName: string;
 }
 
 export interface ICreatePricing {
