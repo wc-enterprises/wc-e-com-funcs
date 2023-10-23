@@ -86,6 +86,22 @@ export class ProductVariantService {
     return variants;
   }
 
+  async getVariantsOfAProduct(
+    productId: string,
+  ): Promise<ProductVariantDocument[]> {
+    const snapshot = await this.productVariantCollection
+      .where('productId', '==', productId)
+      .get();
+    const variants: ProductVariantDocument[] = [];
+
+    snapshot.forEach((doc) => {
+      const variant = doc.data() as ProductVariantDocument;
+      variants.push(variant);
+    });
+
+    return variants;
+  }
+
   async update(
     id: string,
     newData: Partial<ProductVariantDocument>,

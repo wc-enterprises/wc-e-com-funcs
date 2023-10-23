@@ -85,4 +85,20 @@ export class ProductAttributeService {
     const docRef = this.attributeCollection.doc(id);
     await docRef.delete();
   }
+
+  async getProductAttributesOfAProduct(
+    productId: string,
+  ): Promise<ProductAttributeDocument[]> {
+    const snapshot = await this.attributeCollection
+      .where('productId', '==', productId)
+      .get();
+    const attributes: ProductAttributeDocument[] = [];
+
+    snapshot.forEach((doc) => {
+      const attribute = doc.data() as ProductAttributeDocument;
+      attributes.push(attribute);
+    });
+
+    return attributes;
+  }
 }

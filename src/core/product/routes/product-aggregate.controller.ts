@@ -1,4 +1,4 @@
-import { Controller, Get, Req } from '@nestjs/common';
+import { Controller, Get, Param, Req } from '@nestjs/common';
 
 import {
   StandardResponse,
@@ -15,6 +15,19 @@ export class ProductAggregateController {
     'PRODUCT_AGGREGATE_CONTROLLER',
   );
   constructor(private readonly FS: ProductAggregateService) {}
+
+  @Get('get-product-by-id/:id')
+  async getProductById(
+    @Req() request: { requestId: string },
+    @Param('id') id: string,
+  ) {
+    try {
+      const product = await this.FS.getProductById(request.requestId, id);
+      return createSuccessResponse('Product fetched successfully', product);
+    } catch (err) {
+      return createErrorResponse(err.errorCode);
+    }
+  }
 
   @Get('get-categoried-products')
   async getCategorisedProducts(@Req() request: { requestId: string }) {

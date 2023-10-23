@@ -348,4 +348,81 @@ export class ProductAggregateService {
 
     return categorizedProducts;
   }
+
+  async getProductById(
+    requestId: string,
+    productId: string,
+  ): Promise<IProductWithPriceVariantsAndAttributes | null> {
+    const product: ProductDocument =
+      await this.productService.findOne(productId);
+
+    if (!product) {
+      return null; // Return null if the product is not found
+    }
+
+    const pricing: ProductPricingDocument =
+      await this.productPricingService.findOne(productId);
+
+    const attributes: ProductAttributeDocument[] =
+      await this.productAttributesService.getProductAttributesOfAProduct(
+        productId,
+      );
+
+    const variants: ProductVariantDocument[] =
+      await this.productVariantService.getVariantsOfAProduct(productId);
+
+    const variantWithAttributeAndPrice = [];
+
+    if (variants.length) {
+      for (const variant of variants) {
+        const variantPricing: ProductPricingDocument =
+          await this.productPricingService.findOne(variant.id);
+
+        const variantAttributes: ProductAttributeDocument[] =
+          await this.productAttributesService.getProductAttributesOfAProduct(
+            variant.id,
+          );
+
+        const variantWithPrice: IVariantWithPriceAndAttribute = {
+          ...variant,
+          pricingId: variantPricing.id ?? pricing.id,
+          sellingPrice: variantPricing.sellingPrice ?? pricing.sellingPrice,
+          discount: variantPricing.discount ?? pricing.discount,
+          discountUnit: variantPricing.discountUnit ?? pricing.discountUnit,
+          attributes: variantAttributes.map((item) => {
+            return {
+              key: item.key,
+              value: item.value,
+              asset: item.asset,
+            };
+          }),
+        };
+
+        variantWithAttributeAndPrice.push(variantWithPrice);
+      }
+    }
+
+    const productData: IProductWithPriceVariantsAndAttributes = {
+      id: product.id,
+      name: product.name,
+      description: product.description,
+      imagePath: product.imagePath,
+      unit: product.unit,
+      unitsInStock: product.unitsInStock,
+      pricingId: pricing ? pricing.id : '',
+      sellingPrice: pricing ? pricing.sellingPrice : '0',
+      discount: pricing ? pricing.discount : '0',
+      discountUnit: pricing ? pricing.discountUnit : 'percentage',
+      attributes: attributes.map((item) => {
+        return {
+          key: item.key,
+          value: item.value,
+          asset: item.asset,
+        };
+      }),
+      variants: variantWithAttributeAndPrice,
+    };
+
+    return productData;
+  }
 }
