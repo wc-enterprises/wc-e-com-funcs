@@ -460,4 +460,24 @@ export class ProductAggregateService {
     console.log(`Product data fetched successfully`);
     return productData;
   }
+
+  async getProducts(requestId: string): Promise<IProductAggregate[]> {
+    console.log('Fetching products...');
+
+    const products: ProductDocument[] = await this.productService.findAll();
+    console.log(`Fetched ${products.length} products.`);
+
+    const categorizedProducts: IProductAggregate[] = [];
+
+    for (const product of products) {
+      const productData = await this.getProductById(requestId, product.id);
+
+      if (productData) {
+        categorizedProducts.push(productData);
+      }
+    }
+
+    console.log(`Fetched ${categorizedProducts.length} products successfully.`);
+    return categorizedProducts;
+  }
 }

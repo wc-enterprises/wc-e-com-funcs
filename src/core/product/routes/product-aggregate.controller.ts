@@ -29,6 +29,16 @@ export class ProductAggregateController {
     }
   }
 
+  @Get('get-products')
+  async getProductsAggregate(@Req() request: { requestId: string }) {
+    try {
+      const product = await this.FS.getProducts(request.requestId);
+      return createSuccessResponse('Products fetched successfully', product);
+    } catch (err) {
+      return createErrorResponse(err.errorCode);
+    }
+  }
+
   @Get('get-categoried-products')
   async getCategorisedProducts(@Req() request: { requestId: string }) {
     try {
